@@ -5,10 +5,10 @@ import joblib
 @st.cache_resource
 def load_model():
     try:
-        model = joblib.load('best_model_pipeline.pkl')
+        model = joblib.load('best_model_pipeline_final.pkl')
         return model
     except FileNotFoundError:
-        st.error("⚠️ Error: No se encontró el archivo 'best_model_pipeline.pkl'")
+        st.error("⚠️ Error: No se encontró el archivo 'best_model_pipeline_final.pkl'")
         return None
     except Exception as e:
         st.error(f"⚠️ Error al cargar el modelo: {str(e)}")
@@ -17,6 +17,7 @@ def load_model():
 model = load_model()
 
 st.title('Clasificador de Textos para ODS')
+st.text('Proyecto Desarrollado por: [Camilo Andres Daza Barrios y Neill Rolando Giraldo Corredor]')
 st.write('Introduce un texto para clasificarlo según los Objetivos de Desarrollo Sostenible (ODS).')
 
 if model is None:
