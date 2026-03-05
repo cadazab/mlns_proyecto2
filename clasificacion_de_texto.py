@@ -1,14 +1,30 @@
 import streamlit as st
 import joblib
+import nltk
+from nltk import RegexpTokenizer
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 
-# Cargar el modelo entrenado
+def preprocess(text):
+    tokenizer = RegexpTokenizer(r"\w+")
+    stemmer = PorterStemmer()
+    tokens = tokenizer.tokenize(text)
+    tokens = [w for w in tokens if w not in stopwords.words("spanish")]
+    tokens = [stemmer.stem(w) for w in tokens]
+    return " ".join(tokens)
+
 @st.cache_resource
 def load_model():
     try:
-        model = joblib.load('best_model_pipeline_final.pkl')
+        nltk.data.find("corpora/stopwords")
+    except LookupError:
+        nltk.download("stopwords")
+
+    try:
+        model = joblib.load("best_model_pipeline_final.pkl")
         return model
     except FileNotFoundError:
-        st.error("⚠️ Error: No se encontró el archivo 'best_model_pipeline_final.pkl'")
+        st.error(f"⚠️ Error: No se encontró el archivo 'best_model_pipeline_final.pkl'")
         return None
     except Exception as e:
         st.error(f"⚠️ Error al cargar el modelo: {str(e)}")
@@ -28,7 +44,7 @@ user_input = st.text_area('Ingresa tu texto aquí:', '')
 if st.button('Clasificar'):
     if user_input:
         # Predecir el ODS - pasar como lista de strings
-        prediction = model.predict(user_input)
+        prediction = model.predict([user_input])
         st.success(f'El texto se clasifica como ODS: {prediction[0]}')
     else:
         st.warning('Por favor, ingresa un texto para clasificar.')
